@@ -8,7 +8,8 @@ export interface Exchange {
   name: string;
   year_established: number;
   country: string;
-  trade_volume_24h_btc: number; // trade_volume_24h_btc를 숫자로 변경
+  trade_volume_24h_btc: number;
+  supportedPairs: string[]; // 거래소에서 지원하는 거래쌍 목록
 }
 
 export const updateSortOrder = createAction<'asc' | 'desc'>('exchanges/updateSortOrder');
@@ -29,7 +30,11 @@ const initialState: ExchangeState = {
 
 export const fetchExchanges = createAsyncThunk('exchanges/fetchExchanges', async () => {
   const response = await axios.get<Exchange[]>('https://api.coingecko.com/api/v3/exchanges');
-  return response.data;
+  const exchanges = response.data.map((exchange) => ({
+    ...exchange,
+    supportedPairs: [], // 초기값으로 빈 배열 설정
+  }));
+  return exchanges;
 });
 
 export const exchangeSlice = createSlice({
