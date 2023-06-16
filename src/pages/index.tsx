@@ -1,10 +1,8 @@
-// src/pages/index.tsx
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { Exchange, fetchExchanges, updateSortOrder } from '../redux/exchanges';
+import { fetchExchanges, Exchange } from '../redux/exchanges';
 import { RootState, AppDispatch } from '../redux/store';
-import styles from '../styles/table.module.css';
 import axios from 'axios';
 
 const columns = [
@@ -32,7 +30,8 @@ const columns = [
 
 const Home: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const sortedEntities = useSelector((state: RootState) => state.exchange.sortedEntities);
+  const exchanges = useSelector((state: RootState) => state.exchange.entities);
+  const loading = useSelector((state: RootState) => state.exchange.loading);
   const [selectedExchange, setSelectedExchange] = useState<Exchange | null>(null);
   const [pairModalVisible, setPairModalVisible] = useState(false);
   const [supportedPairs, setSupportedPairs] = useState<string[]>([]);
@@ -41,15 +40,11 @@ const Home: React.FC = () => {
     dispatch(fetchExchanges());
   }, [dispatch]);
 
-  const handleSortOrder = (newSortOrder: 'asc' | 'desc') => {
-    dispatch(updateSortOrder(newSortOrder));
-  };
-
   const handleRowClick = async (exchange: Exchange) => {
     setSelectedExchange(exchange);
+    setPairModalVisible(true);
     const pairs = await fetchSupportedPairs(exchange.id);
     setSupportedPairs(pairs);
-    setPairModalVisible(true);
   };
 
   const handleModalClose = () => {
@@ -57,19 +52,20 @@ const Home: React.FC = () => {
     setPairModalVisible(false);
   };
 
- const fetchSupportedPairs = async (exchangeId: string) => {
-  const response = await axios.get(`https://api.coingecko.com/api/v3/exchanges/${exchangeId}/list`);
-  return response.data;
-};
+  const fetchSupportedPairs = async (exchangeId: string) => {
+    const response = await axios.get(`https://api.coingecko.com/api/v3/exchanges/${exchangeId}`);
+    return response.data.supported_pairs;
+  };
 
   return (
-    <div className={styles.table}>
-      <Button onClick={() => handleSortOrder('asc')}>Sort ASC</Button>
-      <Button onClick={() => handleSortOrder('desc')}>Sort DESC</Button>
+    <div>
+      <Button onClick={() => console.log('Sort ASC')}>Sort ASC</Button>
+      <Button onClick={() => console.log('Sort DESC')}>Sort DESC</Button>
       <Table
-        dataSource={sortedEntities}
+        dataSource={exchanges}
         columns={columns}
         rowKey="id"
+        loading={loading === 'pending'}
         onRow={(record) => ({
           onClick: () => handleRowClick(record),
         })}
@@ -81,7 +77,7 @@ const Home: React.FC = () => {
         footer={null}
       >
         <ul>
-          {supportedPairs.map((pair) => (
+          {supportedPairs && supportedPairs.map((pair) => (
             <li key={pair}>{pair}</li>
           ))}
         </ul>
