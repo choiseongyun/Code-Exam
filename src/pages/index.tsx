@@ -5,6 +5,7 @@ import { fetchExchanges, Exchange } from '../redux/exchanges';
 import { RootState, AppDispatch } from '../redux/store';
 import axios from 'axios';
 import { ColumnProps } from 'antd/es/table';
+import ErrorPage from './ErrorPage';
 
 const columns: Array<ColumnProps<Exchange>> = [
   {
@@ -40,6 +41,8 @@ const columns: Array<ColumnProps<Exchange>> = [
 const Home: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
+  const [hasError, setHasError] = useState(false); // 새로운 오류 상태
+
   //useSelector 훅을 사용하여 Redux 스토어 상태를 선택합니다.
   const exchanges = useSelector((state: RootState) => state.exchange.entities);
   const loading = useSelector((state: RootState) => state.exchange.loading);
@@ -69,6 +72,7 @@ const Home: React.FC = () => {
     } catch (error) {
       console.error('Failed to fetch supported pairs:', error);
       setSupportedPairs([]);
+      setHasError(true); // 오류 발생 시 hasError를 true로 설정
     }
   };
   /**
@@ -92,6 +96,10 @@ const Home: React.FC = () => {
     return uniquePairs;
   };
   
+  if (hasError) {
+    return <ErrorPage />; // 오류 발생 시 에러 페이지를 표시
+  }
+
   return (
     <div className="bg-white h-screen">
       {/* <Button onClick={handleSortAsc}>Sort ASC</Button>
