@@ -2,8 +2,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 // HTTP 요청을 처리하기 위한 axios를 가져옵니다.
 import axios from 'axios';
-// 전체 애플리케이션 상태를 나타내는 RootState 타입을 가져옵니다.
-import { RootState } from './store';
+
 
 // Exchange 인터페이스는 거래소 정보를 나타냅니다.
 export interface Exchange {

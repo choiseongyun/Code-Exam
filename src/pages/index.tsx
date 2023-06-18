@@ -36,7 +36,7 @@ const Home: React.FC = () => {
   const loading = useSelector((state: RootState) => state.exchange.loading);
 
   // 선택된 거래소와 관련된 상태를 관리하기 위해 useState 훅을 사용합니다.
-  const [selectedExchange, setSelectedExchange] = useState<Exchange | null>(null);
+  // const [selectedExchange, setSelectedExchange] = useState<Exchange | null>(null);
   const [pairModalVisible, setPairModalVisible] = useState(false);
   const [supportedPairs, setSupportedPairs] = useState<string[] | undefined>(undefined);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc'); // 정렬 방식 상태 변수 추가
@@ -53,7 +53,7 @@ const Home: React.FC = () => {
    */
   const handleRowClick = async (exchange: Exchange) => {
     console.log('Clicked Row:', exchange);
-    setSelectedExchange(exchange);
+    // setSelectedExchange(exchange);
     setPairModalVisible(true);
     try {
       const pairs = await fetchSupportedPairs(exchange.id) as string[];
@@ -68,7 +68,7 @@ const Home: React.FC = () => {
    * 모달을 닫고 선택된 거래소와 관련된 상태를 초기화하는 함수입니다.
    */
   const handleModalClose = () => {
-    setSelectedExchange(null);
+    // setSelectedExchange(null);
     setPairModalVisible(false);
   };
   
